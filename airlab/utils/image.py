@@ -312,12 +312,12 @@ def create_tensor_image_from_itk_image(itk_image, dtype=th.float32, device='cpu'
 
 
 """
-    Create an image pyramide  
+    Create an image pyramide
 """
 def create_image_pyramid(image, down_sample_factor):
 
     image_dim = len(image.size)
-    image_pyramide = []
+    # image_pyramide = []
     if image_dim == 2:
         for level in down_sample_factor:
             sigma = (th.tensor(level)/2).to(dtype=th.float32)
@@ -331,9 +331,9 @@ def create_image_pyramid(image, down_sample_factor):
             image_size = image_sample.size()[-image_dim:]
             image_spacing = [x*y for x, y in zip(image.spacing, level)]
             image_origin = image.origin
-            image_pyramide.append(Image(image_sample, image_size, image_spacing, image_origin))
+            yield Image(image_sample, image_size, image_spacing, image_origin)#image_pyramide.append()
 
-        image_pyramide.append(image)
+        yield image# image_pyramide.append(image)
     elif image_dim == 3:
         for level in down_sample_factor:
             sigma = (th.tensor(level)/2).to(dtype=th.float32)
@@ -347,12 +347,12 @@ def create_image_pyramid(image, down_sample_factor):
             image_size = image_sample.size()[-image_dim:]
             image_spacing = [x*y for x, y in zip(image.spacing, level)]
             image_origin = image.origin
-            image_pyramide.append(Image(image_sample, image_size, image_spacing, image_origin))
+            yield Image(image_sample, image_size, image_spacing, image_origin)#image_pyramide.append()
 
-        image_pyramide.append(image)
+        yield image#image_pyramide.append(image)
 
     else:
         print("Error: ", image_dim, " is not supported with create_image_pyramide()")
         sys.exit(-1)
 
-    return image_pyramide
+    # return image_pyramide
