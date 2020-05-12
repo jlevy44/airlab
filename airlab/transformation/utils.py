@@ -193,9 +193,11 @@ class Diffeomorphic():
         self._scaling = scaling
         self._init_scaling = 8
         self.half=half
+        print(self.half)
 
         if image_size is not None:
             self._image_grid = compute_grid(image_size, dtype=dtype if not self.half else th.half, device=device)
+            print(self.half)
         else:
             self._image_grid = None
 
