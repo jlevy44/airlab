@@ -118,7 +118,7 @@ class RigidTransformation(_Transformation):
         moving_image (Image): moving image for the registration
         opt_cm (bool): using center of as parameter for the optimisation
     """
-    def __init__(self, moving_image, opt_cm=False):
+    def __init__(self, moving_image, opt_cm=False, half=False):
         super(RigidTransformation, self).__init__(image_size=moving_image.size,
                                                   dtype=moving_image.dtype,
                                                   device=moving_image.device)
@@ -147,6 +147,7 @@ class RigidTransformation(_Transformation):
         self._trans_matrix_cm = None
         self._trans_matrix_cm_rw = None
         self._rotation_matrix = None
+        self.half=half
 
         if self._opt_cm:
             self._center_mass_x = Parameter(self._center_mass_x)
@@ -166,6 +167,7 @@ class RigidTransformation(_Transformation):
 
             if self._opt_cm:
                 self._center_mass_z = Parameter(self._center_mass_z)
+
 
     def init_translation(self, fixed_image):
         r"""
@@ -287,7 +289,7 @@ class RigidTransformation(_Transformation):
     def _compute_dense_flow(self, transformation_matrix):
 
         displacement = th.mm(self._grid.view(np.prod(self._image_size).tolist(), self._dim + 1),
-                             transformation_matrix.t().half()).view(*(self._image_size.tolist()), self._dim) \
+                             transformation_matrix.t()).view(*(self._image_size.tolist()), self._dim) \
                        - self._grid[..., :self._dim]
         return displacement
 
@@ -302,6 +304,8 @@ class RigidTransformation(_Transformation):
 
         self._compute_transformation()
         transformation_matrix = self._compute_transformation_matrix()
+        if self.half:
+            transformation_matrix=transformation_matrix.half()
         flow = self._compute_dense_flow(transformation_matrix)
 
         return self._concatenate_flows(flow)
@@ -316,8 +320,8 @@ class SimilarityTransformation(RigidTransformation):
         moving_image (Image): moving image for the registration
         opt_cm (bool): using center of as parameter for the optimisation
     """
-    def __init__(self, moving_image, opt_cm=False):
-        super(SimilarityTransformation, self).__init__(moving_image, opt_cm)
+    def __init__(self, moving_image, opt_cm=False, half=False):
+        super(SimilarityTransformation, self).__init__(moving_image, opt_cm, half)
 
         self._scale_x = Parameter(th.tensor(1.0))
         self._scale_y = Parameter(th.tensor(1.0))
@@ -394,8 +398,8 @@ class AffineTransformation(SimilarityTransformation):
         moving_image (Image): moving image for the registration
         opt_cm (bool): using center of as parameter for the optimisation
     """
-    def __init__(self, moving_image, opt_cm=False):
-        super(AffineTransformation, self).__init__(moving_image, opt_cm)
+    def __init__(self, moving_image, opt_cm=False, half=False):
+        super(AffineTransformation, self).__init__(moving_image, opt_cm, half)
 
         self._shear_y_x = Parameter(th.tensor(0.0))
         self._shear_x_y = Parameter(th.tensor(0.0))
@@ -622,7 +626,7 @@ class _KernelTransformation(_Transformation):
     bspline kernel transformation
 """
 class BsplineTransformation(_KernelTransformation):
-    def __init__(self, image_size, sigma, diffeomorphic=False, order=2, dtype=th.float32, device='cpu'):
+    def __init__(self, image_size, sigma, diffeomorphic=False, order=2, dtype=th.float32, device='cpu', half=False):
         super(BsplineTransformation, self).__init__(image_size, diffeomorphic, dtype, device)
 
         self._stride = np.array(sigma)
@@ -634,7 +638,9 @@ class BsplineTransformation(_KernelTransformation):
 
         self._kernel.unsqueeze_(0).unsqueeze_(0)
         self._kernel = self._kernel.expand(self._dim, *((np.ones(self._dim + 1, dtype=int)*-1).tolist()))
-        self._kernel = self._kernel.to(dtype=dtype, device=self._device).half()
+        self._kernel = self._kernel.to(dtype=dtype, device=self._device)
+        if half:
+            self._kernel=self._kernel.half()
 
         self._initialize()
 
@@ -652,7 +658,7 @@ class WendlandKernelTransformation(_KernelTransformation):
         sigma: specifies how many control points are used (each sigma pixels)
         cp_scale: specifies the extent of the kernel. how many control points are in the support of the kernel
     """
-    def __init__(self, image_size, sigma, cp_scale=2, diffeomorphic=False, ktype="C4", dtype=th.float32, device='cpu'):
+    def __init__(self, image_size, sigma, cp_scale=2, diffeomorphic=False, ktype="C4", dtype=th.float32, device='cpu', half=False):
         super(WendlandKernelTransformation, self).__init__(image_size, diffeomorphic, dtype, device)
 
         self._stride = np.array(sigma)
@@ -664,6 +670,8 @@ class WendlandKernelTransformation(_KernelTransformation):
 
         self._kernel.unsqueeze_(0).unsqueeze_(0)
         self._kernel = self._kernel.expand(self._dim, *((np.ones(self._dim + 1,dtype=int) * -1).tolist()))
-        self._kernel = self._kernel.to(dtype=dtype, device=self._device).half()
+        self._kernel = self._kernel.to(dtype=dtype, device=self._device)
+        if half:
+            self._kernel=self._kernel.half()
 
         self._initialize()
