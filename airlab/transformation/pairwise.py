@@ -189,7 +189,6 @@ class RigidTransformation(_Transformation):
         if self._dim == 3:
             fixed_image_center_mass_z = th.sum(fixed_image.image.squeeze() * self._grid[..., 2]) / intensity_sum
             self._t_z = Parameter(self._center_mass_z - fixed_image_center_mass_z)
-        print(self._t_x,self._t_y)
 
     @property
     def transformation_matrix(self):
@@ -471,6 +470,7 @@ class AffineTransformation(SimilarityTransformation):
         self._shear_matrix[2, 1] = self._shear_y_z
 
     def _compute_transformation_matrix(self):
+        print(self._trans_matrix_pos, self._trans_matrix_cm,self._rotation_matrix,self._scale_matrix,self._shear_matrix,self._trans_matrix_cm_rw)
         transformation_matrix = th.mm(th.mm(th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
                                                         self._rotation_matrix),self._scale_matrix), self._shear_matrix),
                                       self._trans_matrix_cm_rw)[0:self._dim, :]
