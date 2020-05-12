@@ -14,6 +14,7 @@
 
 import torch as th
 from numpy import inf,max
+from apex import amp
 
 class _Registration():
     def __init__(self, verbose=True):
@@ -120,7 +121,8 @@ class PairwiseRegistration(_PairwiseRegistration):
         # sum up all loss terms
         loss = sum(lossList)
 
-        loss.backward()
+        with amp.scale_loss(loss, self._optimizer) as scaled_loss:
+            scaled_loss.backward()
 
         return loss
 
@@ -182,7 +184,8 @@ class DemonsRegistraion(_Registration):
         # sum up all loss terms
         loss = sum(lossList)
 
-        loss.backward()
+        with amp.scale_loss(loss, self._optimizer) as scaled_loss:
+            scaled_loss.backward()
 
         return loss
 
@@ -196,5 +199,3 @@ class DemonsRegistraion(_Registration):
 
             for regulariser in self._regulariser:
                 regulariser.regularise(self._transformation.parameters())
-
-
