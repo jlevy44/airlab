@@ -96,11 +96,11 @@ class PairwiseRegistration(_PairwiseRegistration):
         self._optimizer.zero_grad()
 
         displacement = self._transformation()
-        print(displacement)
+        # print(displacement)
 
         if self.half:
             displacement=displacement.half()
-        print(displacement)
+        # print(displacement)
 
         # compute the image loss
         lossList = []
