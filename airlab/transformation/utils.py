@@ -70,13 +70,13 @@ def upsample_displacement(displacement, new_size, interpolation="linear"):
         if interpolation == 'linear':
             interpolation = 'bilinear'
         else:
-            interpolation = 'nearest'
+            interpolation = 'bicubic'
     elif dim == 3:
         displacement = th.transpose(displacement.unsqueeze(0), 0, 4).unsqueeze(0)
         if interpolation == 'linear':
             interpolation = 'trilinear'
         else:
-            interpolation = 'nearest'
+            interpolation = 'bicubic'
 
     upsampled_displacement = F.interpolate(displacement[..., 0], size=new_size, mode=interpolation, align_corners=False)
 
@@ -248,6 +248,3 @@ class Diffeomorphic():
             displacement = displacement + F.grid_sample(displacement, displacement_trans + grid)
 
         return displacement.transpose(1, 2).transpose(2, 3).transpose(3, 4).squeeze()
-
-
-
