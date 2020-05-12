@@ -476,6 +476,7 @@ class AffineTransformation(SimilarityTransformation):
         transformation_matrix = th.mm(th.mm(th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
                                                         self._rotation_matrix),self._scale_matrix), self._shear_matrix),
                                       self._trans_matrix_cm_rw)[0:self._dim, :]
+        print(transformation_matrix)
 
         return transformation_matrix
 
