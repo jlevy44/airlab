@@ -184,7 +184,7 @@ class Diffeomorphic():
               Tom Vercauterena et al., 2008
 
     """
-    def __init__(self, image_size=None, scaling=10, dtype=th.float32, device='cpu'):
+    def __init__(self, image_size=None, scaling=10, dtype=th.float32, device='cpu', half=False):
 
         self._dtype = dtype
         self._device = device
@@ -192,15 +192,16 @@ class Diffeomorphic():
         self._image_size = image_size
         self._scaling = scaling
         self._init_scaling = 8
+        self.half=half
 
         if image_size is not None:
-            self._image_grid = compute_grid(image_size, dtype=dtype, device=device)
+            self._image_grid = compute_grid(image_size, dtype=dtype if not self.half else th.half, device=device)
         else:
             self._image_grid = None
 
     def set_image_size(self, image_szie):
         self._image_size = image_szie
-        self._image_grid = compute_grid(self._image_size, dtype=self._dtype, device=self._device)
+        self._image_grid = compute_grid(self._image_size, dtype=self._dtype if not self.half else th.half, device=self._device)
 
     def calculate(self, displacement):
         if self._dim == 2:

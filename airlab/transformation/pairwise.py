@@ -25,7 +25,7 @@ from . import utils as tu
     Base class for a transformation
 """
 class _Transformation(th.nn.Module):
-    def __init__(self, image_size, diffeomorphic=False, dtype=th.float32, device='cpu'):
+    def __init__(self, image_size, diffeomorphic=False, dtype=th.float32, device='cpu', half=False):
         super(_Transformation, self).__init__()
 
         self._dtype = dtype
@@ -37,9 +37,10 @@ class _Transformation(th.nn.Module):
         self._constant_flow = None
 
         self._compute_flow = None
+        self.half=half
 
         if self._diffeomorphic:
-            self._diffeomorphic_calculater = tu.Diffeomorphic(image_size, dtype=dtype, device=device)
+            self._diffeomorphic_calculater = tu.Diffeomorphic(image_size, dtype=dtype, device=device, half=self.half)
         else:
             self._diffeomorphic_calculater = None
 
@@ -482,8 +483,8 @@ class NonParametricTransformation(_Transformation):
     r"""
         None parametric transformation
     """
-    def __init__(self, image_size,  diffeomorphic=False, dtype=th.float32, device='cpu'):
-        super(NonParametricTransformation, self).__init__(image_size, diffeomorphic, dtype, device)
+    def __init__(self, image_size,  diffeomorphic=False, dtype=th.float32, device='cpu', half=False):
+        super(NonParametricTransformation, self).__init__(image_size, diffeomorphic, dtype, device, half=half)
 
         self._tensor_size = [self._dim] + self._image_size.tolist()
 
@@ -524,8 +525,8 @@ class NonParametricTransformation(_Transformation):
     Base class for kernel transformations
 """
 class _KernelTransformation(_Transformation):
-    def __init__(self, image_size, diffeomorphic=False, dtype=th.float32, device='cpu'):
-        super(_KernelTransformation, self).__init__(image_size, diffeomorphic, dtype, device)
+    def __init__(self, image_size, diffeomorphic=False, dtype=th.float32, device='cpu', half=False):
+        super(_KernelTransformation, self).__init__(image_size, diffeomorphic, dtype, device, half=half)
 
         self._kernel = None
         self._stride = 1
@@ -627,7 +628,7 @@ class _KernelTransformation(_Transformation):
 """
 class BsplineTransformation(_KernelTransformation):
     def __init__(self, image_size, sigma, diffeomorphic=False, order=2, dtype=th.float32, device='cpu', half=False):
-        super(BsplineTransformation, self).__init__(image_size, diffeomorphic, dtype, device)
+        super(BsplineTransformation, self).__init__(image_size, diffeomorphic, dtype, device, half=half)
 
         self._stride = np.array(sigma)
 
@@ -659,7 +660,7 @@ class WendlandKernelTransformation(_KernelTransformation):
         cp_scale: specifies the extent of the kernel. how many control points are in the support of the kernel
     """
     def __init__(self, image_size, sigma, cp_scale=2, diffeomorphic=False, ktype="C4", dtype=th.float32, device='cpu', half=False):
-        super(WendlandKernelTransformation, self).__init__(image_size, diffeomorphic, dtype, device)
+        super(WendlandKernelTransformation, self).__init__(image_size, diffeomorphic, dtype, device, half=half)
 
         self._stride = np.array(sigma)
 
