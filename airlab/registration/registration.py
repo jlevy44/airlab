@@ -98,8 +98,8 @@ class PairwiseRegistration(_PairwiseRegistration):
         displacement = self._transformation()
         # print(displacement)
 
-        if self.half:
-            displacement=displacement.half()
+        # if self.half:
+        #     displacement=displacement.half()
         # print(displacement)
 
         # compute the image loss
