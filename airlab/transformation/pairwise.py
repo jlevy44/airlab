@@ -170,7 +170,7 @@ class RigidTransformation(_Transformation):
                 self._center_mass_z = Parameter(self._center_mass_z)
 
 
-    def init_translation(self, fixed_image):
+    def init_translation(self, fixed_image, dtype=th.float32):
         r"""
         Initialize the translation parameters with the difference between the center of mass of the
         fixed and the moving image
@@ -183,12 +183,12 @@ class RigidTransformation(_Transformation):
         fixed_image_center_mass_x = th.sum(fixed_image.image.squeeze() * self._grid[..., 0]) / intensity_sum
         fixed_image_center_mass_y = th.sum(fixed_image.image.squeeze() * self._grid[..., 1]) / intensity_sum
 
-        self._t_x = Parameter(self._center_mass_x - fixed_image_center_mass_x)
-        self._t_y = Parameter(self._center_mass_y - fixed_image_center_mass_y)
+        self._t_x = Parameter(self._center_mass_x - fixed_image_center_mass_x, dtype=dtype)
+        self._t_y = Parameter(self._center_mass_y - fixed_image_center_mass_y, dtype=dtype)
 
         if self._dim == 3:
             fixed_image_center_mass_z = th.sum(fixed_image.image.squeeze() * self._grid[..., 2]) / intensity_sum
-            self._t_z = Parameter(self._center_mass_z - fixed_image_center_mass_z)
+            self._t_z = Parameter(self._center_mass_z - fixed_image_center_mass_z, dtype=dtype)
 
     @property
     def transformation_matrix(self):
