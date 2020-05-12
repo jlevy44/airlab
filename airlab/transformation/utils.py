@@ -70,7 +70,7 @@ def upsample_displacement(displacement, new_size, interpolation="linear"):
         if interpolation == 'linear':
             interpolation = 'bilinear'
         else:
-            interpolation = 'nearest'
+            interpolation = 'bicubic'#'nearest'
     elif dim == 3:
         displacement = th.transpose(displacement.unsqueeze(0), 0, 4).unsqueeze(0)
         if interpolation == 'linear':
