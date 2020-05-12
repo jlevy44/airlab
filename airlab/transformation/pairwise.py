@@ -170,7 +170,7 @@ class RigidTransformation(_Transformation):
                 self._center_mass_z = Parameter(self._center_mass_z)
 
 
-    def init_translation(self, fixed_image, dtype=th.float32):
+    def init_translation(self, fixed_image):
         r"""
         Initialize the translation parameters with the difference between the center of mass of the
         fixed and the moving image
@@ -178,6 +178,7 @@ class RigidTransformation(_Transformation):
         Args:
             fixed_image (Image): Fixed image for the registration
         """
+
         intensity_sum = th.sum(fixed_image.image)
 
         fixed_image_center_mass_x = th.sum(fixed_image.image.squeeze() * self._grid[..., 0]) / intensity_sum
@@ -223,6 +224,7 @@ class RigidTransformation(_Transformation):
 
 
     def _compute_transformation_2d(self):
+
 
         self._trans_matrix_pos = th.diag(th.ones(self._dim + 1, dtype=self._dtype, device=self._device))
         self._trans_matrix_cm = th.diag(th.ones(self._dim + 1, dtype=self._dtype, device=self._device))
@@ -470,7 +472,7 @@ class AffineTransformation(SimilarityTransformation):
         self._shear_matrix[2, 1] = self._shear_y_z
 
     def _compute_transformation_matrix(self):
-        print(self._trans_matrix_pos, self._trans_matrix_cm,self._rotation_matrix,self._scale_matrix,self._shear_matrix,self._trans_matrix_cm_rw)
+        print(self._trans_matrix_pos.device, self._trans_matrix_cm.device,self._rotation_matrix.device,self._scale_matrix.device,self._shear_matrix.device,self._trans_matrix_cm_rw.device)
         transformation_matrix = th.mm(th.mm(th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
                                                         self._rotation_matrix),self._scale_matrix), self._shear_matrix),
                                       self._trans_matrix_cm_rw)[0:self._dim, :]
