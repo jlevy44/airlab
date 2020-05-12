@@ -306,8 +306,8 @@ class RigidTransformation(_Transformation):
         self._compute_transformation()
         transformation_matrix = self._compute_transformation_matrix()
 
-        if self.half:
-            transformation_matrix=transformation_matrix.half()
+        # if self.half:
+        #     transformation_matrix=transformation_matrix.half()
 
         flow = self._compute_dense_flow(transformation_matrix)
 
@@ -389,8 +389,8 @@ class SimilarityTransformation(RigidTransformation):
         self._compute_transformation()
         transformation_matrix = self._compute_transformation_matrix()
 
-        if self.half:
-            transformation_matrix=transformation_matrix.half()
+        # if self.half:
+        #     transformation_matrix=transformation_matrix.half()
 
         flow = self._compute_dense_flow(transformation_matrix)
 
@@ -482,8 +482,8 @@ class AffineTransformation(SimilarityTransformation):
 
         transformation_matrix = self._compute_transformation_matrix()
         print(transformation_matrix)
-        if self.half:
-            transformation_matrix=transformation_matrix.half()
+        # if self.half:
+        #     transformation_matrix=transformation_matrix.half()
         print(transformation_matrix)
         flow = self._compute_dense_flow(transformation_matrix)
 
