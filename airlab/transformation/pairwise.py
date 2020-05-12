@@ -451,7 +451,7 @@ class AffineTransformation(SimilarityTransformation):
 
         super(AffineTransformation, self)._compute_transformation_2d()
 
-        self._shear_matrix = th.diag(th.ones(self._dim + 1, dtype=self._dtype, device=self._device)).cuda()
+        self._shear_matrix = th.diag(th.ones(self._dim + 1, dtype=self._dtype, device=self._device))
 
         self._shear_matrix[0, 1] = self._shear_y_x
         self._shear_matrix[1, 0] = self._shear_x_y
