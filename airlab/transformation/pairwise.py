@@ -186,7 +186,7 @@ class RigidTransformation(_Transformation):
         if self._dim == 3:
             fixed_image_center_mass_z = th.sum(fixed_image.image.squeeze() * self._grid[..., 2]) / intensity_sum
             self._t_z = Parameter(self._center_mass_z - fixed_image_center_mass_z)
-            
+
     @property
     def transformation_matrix(self):
         return self._compute_transformation_matrix()
@@ -215,7 +215,7 @@ class RigidTransformation(_Transformation):
             self._phi_y = Parameter(th.tensor(phi[2]).to(dtype=self._dtype, device=self._device))
             if rotation_center is not None:
                 self._center_mass_z = rotation_center[1]
-                
+
             self._compute_transformation_3d()
 
 
@@ -276,12 +276,12 @@ class RigidTransformation(_Transformation):
         R_z[0, 1] = -th.sin(self._phi_z)
         R_z[1, 0] = th.sin(self._phi_z)
         R_z[1, 1] = th.cos(self._phi_z)
-        
+
         self._rotation_matrix = th.mm(th.mm(R_z, R_y), R_x)
 
     def _compute_transformation_matrix(self):
         transformation_matrix = th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
-                                                  self._rotation_matrix), self._trans_matrix_cm_rw)[0:self._dim, :]
+                                                  self._rotation_matrix), self._trans_matrix_cm_rw)[0:self._dim, :].half()
         return transformation_matrix
 
     def _compute_dense_flow(self, transformation_matrix):
@@ -294,7 +294,7 @@ class RigidTransformation(_Transformation):
     def print(self):
         for name, param in self.named_parameters():
             print(name, param.item())
-            
+
     def compute_displacement(self, transformation_matrix):
         return self._compute_dense_flow(transformation_matrix)
 
@@ -305,8 +305,8 @@ class RigidTransformation(_Transformation):
         flow = self._compute_dense_flow(transformation_matrix)
 
         return self._concatenate_flows(flow)
-    
-    
+
+
 
 
 class SimilarityTransformation(RigidTransformation):
