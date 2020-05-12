@@ -88,13 +88,17 @@ class _ImageSeriesRegistration(_Registration):
 
 
 class PairwiseRegistration(_PairwiseRegistration):
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=True, half=False):
         super(PairwiseRegistration, self).__init__(verbose=verbose)
+        self.half=half
 
     def return_loss(self):
         self._optimizer.zero_grad()
 
         displacement = self._transformation()
+
+        if self.half:
+            displacement=displacement.half()
 
         # compute the image loss
         lossList = []
@@ -123,8 +127,6 @@ class PairwiseRegistration(_PairwiseRegistration):
 
         with amp.scale_loss(loss, self._optimizer) as scaled_loss:
             scaled_loss.backward()
-
-
 
         return loss.item()
 
