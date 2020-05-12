@@ -475,7 +475,12 @@ class AffineTransformation(SimilarityTransformation):
         self._shear_matrix[2, 1] = self._shear_y_z
 
     def _compute_transformation_matrix(self):
-        # print(self._trans_matrix_pos.device, self._trans_matrix_cm.device,self._rotation_matrix.device,self._scale_matrix.device,self._shear_matrix.device,self._trans_matrix_cm_rw.device)
+        print(self._trans_matrix_pos.dtype,
+              self._trans_matrix_cm.dtype,
+              self._rotation_matrix.dtype,
+              self._scale_matrix.dtype,
+              self._shear_matrix.dtype,
+              self._trans_matrix_cm_rw.dtype)
         transformation_matrix = th.mm(th.mm(th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
                                                         self._rotation_matrix),self._scale_matrix), self._shear_matrix),
                                       self._trans_matrix_cm_rw)[0:self._dim, :]
