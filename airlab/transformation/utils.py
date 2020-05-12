@@ -234,7 +234,7 @@ class Diffeomorphic():
 
         for i in range(scaling):
             displacement_trans = displacement.transpose(1, 2).transpose(2, 3)
-            displacement = displacement + F.grid_sample(displacement, displacement_trans + grid.half())
+            displacement = displacement + F.grid_sample(displacement, displacement_trans + grid)
 
         return displacement.transpose(1, 2).transpose(2, 3).squeeze()
 
