@@ -183,12 +183,13 @@ class RigidTransformation(_Transformation):
         fixed_image_center_mass_x = th.sum(fixed_image.image.squeeze() * self._grid[..., 0]) / intensity_sum
         fixed_image_center_mass_y = th.sum(fixed_image.image.squeeze() * self._grid[..., 1]) / intensity_sum
 
-        self._t_x = Parameter(self._center_mass_x - fixed_image_center_mass_x, dtype=dtype)
-        self._t_y = Parameter(self._center_mass_y - fixed_image_center_mass_y, dtype=dtype)
+        self._t_x = Parameter(self._center_mass_x - fixed_image_center_mass_x)
+        self._t_y = Parameter(self._center_mass_y - fixed_image_center_mass_y)
 
         if self._dim == 3:
             fixed_image_center_mass_z = th.sum(fixed_image.image.squeeze() * self._grid[..., 2]) / intensity_sum
-            self._t_z = Parameter(self._center_mass_z - fixed_image_center_mass_z, dtype=dtype)
+            self._t_z = Parameter(self._center_mass_z - fixed_image_center_mass_z)
+        print(self._t_x,self._t_y,self._t_z)
 
     @property
     def transformation_matrix(self):
