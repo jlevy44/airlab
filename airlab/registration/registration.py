@@ -99,6 +99,7 @@ class PairwiseRegistration(_PairwiseRegistration):
 
         if self.half:
             displacement=displacement.half()
+        print(displacement)
 
         # compute the image loss
         lossList = []
