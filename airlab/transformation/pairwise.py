@@ -472,7 +472,7 @@ class AffineTransformation(SimilarityTransformation):
         self._shear_matrix[2, 1] = self._shear_y_z
 
     def _compute_transformation_matrix(self):
-        print(self._trans_matrix_pos.device, self._trans_matrix_cm.device,self._rotation_matrix.device,self._scale_matrix.device,self._shear_matrix.device,self._trans_matrix_cm_rw.device)
+        # print(self._trans_matrix_pos.device, self._trans_matrix_cm.device,self._rotation_matrix.device,self._scale_matrix.device,self._shear_matrix.device,self._trans_matrix_cm_rw.device)
         transformation_matrix = th.mm(th.mm(th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
                                                         self._rotation_matrix),self._scale_matrix), self._shear_matrix),
                                       self._trans_matrix_cm_rw)[0:self._dim, :]
@@ -484,10 +484,10 @@ class AffineTransformation(SimilarityTransformation):
         self._compute_transformation()
 
         transformation_matrix = self._compute_transformation_matrix()
-        print(transformation_matrix)
+        # print(transformation_matrix)
         # if self.half:
         #     transformation_matrix=transformation_matrix.half()
-        print(transformation_matrix)
+        # print(transformation_matrix)
         flow = self._compute_dense_flow(transformation_matrix)
 
         return self._concatenate_flows(flow)
