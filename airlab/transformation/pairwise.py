@@ -281,13 +281,13 @@ class RigidTransformation(_Transformation):
 
     def _compute_transformation_matrix(self):
         transformation_matrix = th.mm(th.mm(th.mm(self._trans_matrix_pos, self._trans_matrix_cm),
-                                                  self._rotation_matrix), self._trans_matrix_cm_rw)[0:self._dim, :].half()
+                                                  self._rotation_matrix), self._trans_matrix_cm_rw)[0:self._dim, :]
         return transformation_matrix
 
     def _compute_dense_flow(self, transformation_matrix):
 
         displacement = th.mm(self._grid.view(np.prod(self._image_size).tolist(), self._dim + 1),
-                             transformation_matrix.t()).view(*(self._image_size.tolist()), self._dim) \
+                             transformation_matrix.t().half()).view(*(self._image_size.tolist()), self._dim) \
                        - self._grid[..., :self._dim]
         return displacement
 
