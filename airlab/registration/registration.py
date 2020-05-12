@@ -91,7 +91,7 @@ class PairwiseRegistration(_PairwiseRegistration):
     def __init__(self, verbose=True):
         super(PairwiseRegistration, self).__init__(verbose=verbose)
 
-    def _closure(self):
+    def return_loss(self):
         self._optimizer.zero_grad()
 
         displacement = self._transformation()
@@ -124,7 +124,9 @@ class PairwiseRegistration(_PairwiseRegistration):
         with amp.scale_loss(loss, self._optimizer) as scaled_loss:
             scaled_loss.backward()
 
-        return loss
+
+
+        return loss.item()
 
     def start(self, EarlyStopping=False, StopPatience=10):
 
@@ -139,7 +141,8 @@ class PairwiseRegistration(_PairwiseRegistration):
         for iter_index in range(self._number_of_iterations):
             if self._verbose:
                 print(str(iter_index) + " ", end='', flush=True)
-            loss = self._optimizer.step(self._closure)
+            loss = self.return_loss()#self._optimizer.step()
+            self._optimizer.step()
             if EarlyStopping:
                 if loss < self.loss:
                     n = 0
@@ -163,7 +166,7 @@ class DemonsRegistraion(_Registration):
     def set_regulariser(self, regulariser):
             self._regulariser = regulariser
 
-    def _closure(self):
+    def return_loss(self):
         self._optimizer.zero_grad()
 
         displacement = self._transformation()
@@ -187,7 +190,7 @@ class DemonsRegistraion(_Registration):
         with amp.scale_loss(loss, self._optimizer) as scaled_loss:
             scaled_loss.backward()
 
-        return loss
+        return loss.item()
 
     def start(self):
 
@@ -195,7 +198,8 @@ class DemonsRegistraion(_Registration):
             if self._verbose:
                 print(str(iter_index) + " ", end='', flush=True)
 
-            loss = self._optimizer.step(self._closure)
+            loss = self.return_loss()#self._optimizer.step()
+            self._optimizer.step()
 
             for regulariser in self._regulariser:
                 regulariser.regularise(self._transformation.parameters())
